@@ -25,12 +25,9 @@ def extract_equipment(text) -> Tuple[str, float]:
         'DOPHENIX', 'POWERTRAB', 'Powerset', 'Rita Rack', 'Rifa Rack',
         'Systemerde', 'Brücke', 'Tür'
     ] + list(config.GERMAN_TERMS.keys())
-    found = []
     for eq in equipment_keywords:
         if eq.lower() in text.lower():
-            found.append(eq)
-    if found:
-        return "; ".join(found), 0.9
+            return eq, 0.9  # Return only the first match
     return '', 0.0
 
 def extract_quantity(text) -> Tuple[str, float]:
