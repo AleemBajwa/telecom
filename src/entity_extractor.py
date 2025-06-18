@@ -1,5 +1,5 @@
 import re
-import config
+from src import config
 from typing import Tuple
 
 def extract_site_id(text) -> Tuple[str, float]:

@@ -1,5 +1,5 @@
 import pandas as pd
-import config
+from src import config
 
 def save_to_csv(data, output_file):
     # Define the 21 standardized fields

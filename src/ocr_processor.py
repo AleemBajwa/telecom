@@ -1,4 +1,4 @@
-import config
+from src import config
 from azure.ai.formrecognizer import DocumentAnalysisClient
 from azure.core.credentials import AzureKeyCredential
 
