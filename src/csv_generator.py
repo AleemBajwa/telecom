@@ -1,14 +1,16 @@
 import pandas as pd
 from src import config
+from src.entity_extractor import extract_detected_terms
 
 def save_to_csv(data, output_file):
-    # Define the 21 standardized fields
+    # Define the 21 standardized fields + Glossary Terms
     output_fields = [
         'TIMS Site Code', 'Field Asset Name', 'Category', 'Quantity',
         'Manufacturer', 'Serial Number', 'Power (kW)', 'Capacity (Ah)',
         'Dimensions (mm)', 'Installation Date', 'Inspection Date',
         'Status', 'Location', 'Platform', 'Antenna Type', 'Battery Type',
-        'Certification', 'Inspector', 'Notes', 'Confidence', 'Source File'
+        'Certification', 'Inspector', 'Notes', 'Confidence', 'Source File',
+        'Glossary Terms'
     ]
     # Fill missing fields with empty string
     row = {field: data.get(field, '') for field in output_fields}

@@ -4,10 +4,21 @@ from src import config
 from src.ocr_processor import process_document
 from src.entity_extractor import (
     extract_site_id, extract_equipment, extract_quantity, extract_manufacturer,
-    extract_serial_number, extract_power, extract_capacity, extract_dimensions, extract_date, extract_field
+    extract_serial_number, extract_power, extract_capacity, extract_dimensions, extract_date, extract_field, extract_detected_terms
 )
 from src.csv_generator import save_to_csv
 import pandas as pd
+
+def extract_context_for_terms(text, terms):
+    # Extract a line or two of context around each detected term
+    context = {}
+    lines = text.splitlines()
+    for term in terms:
+        for i, line in enumerate(lines):
+            if term.lower() in line.lower():
+                # Get the line and one before/after for context
+                context[term] = '\n'.join(lines[max(0, i-1):min(len(lines), i+2)])
+    return context
 
 def process_all_documents():
     input_dir = config.INPUT_FOLDER
@@ -38,6 +49,14 @@ def process_all_documents():
                     data[field], field_conf[field] = extract_field(text, field)
                 data['Confidence'] = min([v for v in field_conf.values() if isinstance(v, float)], default=0.0)
                 data['Source File'] = filename
+                # Extract glossary terms and context
+                glossary_terms, _ = extract_detected_terms(text)
+                data['Glossary Terms'] = glossary_terms
+                if glossary_terms:
+                    context = extract_context_for_terms(text, glossary_terms.split('; '))
+                    # Optionally, add context to Notes or a new field
+                    if context:
+                        data['Notes'] += '\n' + '\n'.join([f"{k}: {v}" for k, v in context.items()])
                 all_data.append(data)
                 # Logging
                 log_lines.append(f"File: {filename}")
