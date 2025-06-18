@@ -16,6 +16,7 @@ uploaded_files = st.file_uploader("Upload documents", type=["pdf", "png", "jpg",
 
 if uploaded_files:
     results = []
+    ocr_debug = {}
     for uploaded_file in uploaded_files:
         with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[-1]) as tmp_file:
             tmp_file.write(uploaded_file.read())
@@ -23,6 +24,7 @@ if uploaded_files:
         try:
             ocr_result = process_document(tmp_path)
             text = ocr_result if isinstance(ocr_result, str) else str(ocr_result)
+            ocr_debug[uploaded_file.name] = text  # Save OCR output for debugging
             data = {}
             data['TIMS Site Code'], _ = extract_site_id(text)
             data['Field Asset Name'], _ = extract_equipment(text)
@@ -51,4 +53,9 @@ if uploaded_files:
             file_name="combined_results.csv",
             mime='text/csv'
         )
-        st.dataframe(df) 
+        st.dataframe(df)
+        # Show OCR debug output for each file
+        st.header("OCR Debug Output (Raw Text)")
+        for fname, ocr_text in ocr_debug.items():
+            st.subheader(fname)
+            st.text_area("OCR Output", ocr_text, height=200) 
